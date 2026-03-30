@@ -557,7 +557,111 @@ Claude会自动读取这个文件，你不需要每次都解释。
 在项目A中讨论了代码风格，然后切换到项目B。Claude可能会混淆两个项目的约定。解决方案：切换项目时用`/clear`清空Context。
 
 ### CLAUDE.md定制
-<!-- 待填充 -->
+
+#### 1. CLAUDE.md的作用和语法
+
+**CLAUDE.md**是放在项目根目录的特殊文件，Claude Code会在每次对话开始时自动读取它。它的作用是告诉Claude这个项目的规则和偏好。
+
+基本语法很简单，就是Markdown格式的纯文本：
+
+```
+# 项目信息
+- 使用TypeScript + React 18
+- 代码风格：Prettier + ESLint
+
+## 代码约定
+- 函数名用camelCase
+- 常量用UPPER_SNAKE_CASE
+- 组件用PascalCase
+
+## 测试要求
+- 所有公开函数必须有单元测试
+- 测试框架：Jest
+```
+
+Claude会自动理解这些信息，不需要特殊的语法。
+
+---
+
+#### 2. 常见的定制场景
+
+**场景1：定义代码风格和约定**
+
+```
+## 代码风格
+- 使用2空格缩进
+- 字符串用单引号
+- 行长限制80字符
+- 禁止使用var，只用const/let
+```
+
+这样Claude生成的代码会自动遵循这些规则。
+
+**场景2：指定审查标准**
+
+```
+## 代码审查标准
+- 必须有错误处理
+- 性能关键路径需要注释说明复杂度
+- 所有API调用必须有超时设置
+```
+
+当你让Claude审查代码时，它会按这些标准检查。
+
+**场景3：设置项目特定的术语和缩写**
+
+```
+## 项目术语
+- API：后端接口
+- UI：用户界面
+- DAL：数据访问层
+- BFF：后端即服务
+```
+
+这样Claude不会误解你的缩写。
+
+---
+
+#### 3. 如何写出有效的CLAUDE.md
+
+**原则1：简洁明确，避免冗长**
+
+不要写成一本书。CLAUDE.md应该是快速参考，而不是详细文档。
+
+```
+好的：
+- 使用TypeScript
+- 测试框架：Jest
+
+不好的：
+我们的项目使用TypeScript作为编程语言，因为它提供了类型安全...
+```
+
+**原则2：包含具体例子**
+
+抽象的规则Claude可能理解不准确。加上例子会更清楚：
+
+```
+## 错误处理
+✓ 好的例子：
+try {
+  const data = await fetchData();
+} catch (error) {
+  logger.error('Failed to fetch', error);
+  throw new CustomError('Data fetch failed');
+}
+
+✗ 避免：
+try {
+  const data = await fetchData();
+} catch (e) {
+  console.log(e);
+}
+```
+
+**原则3：定期更新**
+
+当项目规则改变时，更新CLAUDE.md。比如从Jest切换到Vitest，要立即更新。
 
 ### Prompt技巧
 <!-- 待填充 -->
