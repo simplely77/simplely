@@ -1,5 +1,5 @@
 {
-  "userName": "",
+  "userName": "哥哥",
   "enableBlocklist": true,
   "allowExternalAccess": false,
   "blockedCommands": {
@@ -65,7 +65,7 @@
     "scrollDownKey": "s",
     "focusInputKey": "i"
   },
-  "locale": "en",
+  "locale": "zh-CN",
   "claudeCliPath": "",
   "claudeCliPathsByHost": {},
   "loadUserClaudeSettings": true,
