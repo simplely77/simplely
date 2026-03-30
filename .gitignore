@@ -1,4 +1,28 @@
+# Obsidian
 .obsidian/
 obsidian/
 trash/
-DS_Store
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Claude
+.claude/
+
+# Environment
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+package-lock.json
+
+# OS
+*.log
