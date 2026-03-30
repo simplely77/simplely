@@ -37,3 +37,10 @@
 >md:w-1/2 中屏幕50%宽
 >lg:grid-cols-4 大屏幕四列
 >hidden md:block 小屏隐藏，中屏显示
+
+## CSS中一些鼠标键盘相关的事件
+
+>onChange
+>onKeyDown
+>onClick
+>onHover
