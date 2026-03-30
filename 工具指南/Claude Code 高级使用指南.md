@@ -412,7 +412,67 @@ function calculateDiscount(price, quantity, customerType) {
 ## ⚡ 通用高级技巧
 
 ### Context管理
-<!-- 待填充 -->
+
+#### 1. 什么是Context，为什么重要
+
+**Context**是Claude能记住的对话历史。在Claude Code中，你的每条消息、每个文件引用、每个回答都会被保存在Context中。Context的大小直接影响Claude的回答质量：
+
+- **Context充足**：Claude能看到完整的代码关系、之前的分析、你的偏好设置
+- **Context混乱**：无关信息堆积，Claude容易给出不相关的建议
+- **Context过期**：旧的信息没有更新，Claude基于过时的假设做决策
+
+---
+
+#### 2. 如何有效地使用Context
+
+**技巧1：用`/clear`清空不需要的历史**
+
+当你切换到完全不同的任务时，清空旧的Context：
+
+```
+/clear
+```
+
+这样Claude不会被之前的讨论干扰。比如从调试Bug切换到写文档时，清空Context能让Claude更专注。
+
+**技巧2：用`@file`引用关键文件而不是复制粘贴**
+
+不要把整个文件内容复制到消息里，而是用`@file`引用：
+
+```
+我想理解@src/utils/validation.js中的逻辑
+```
+
+这样Claude能看到文件内容，但不会浪费Context空间。
+
+**技巧3：用CLAUDE.md保存项目级别的信息**
+
+把项目的通用信息写在CLAUDE.md中，而不是每次都重复说：
+
+```
+# 项目信息
+- 使用TypeScript + React
+- 代码风格：Prettier + ESLint
+- 测试框架：Jest
+```
+
+Claude会自动读取这个文件，你不需要每次都解释。
+
+---
+
+#### 3. Context的常见陷阱
+
+**陷阱1：堆积太多无关信息导致回答变差**
+
+如果你在同一个对话中讨论了10个不同的问题，Claude的回答会变得模糊。解决方案：定期清空Context，为新任务开始新对话。
+
+**陷阱2：忘记更新过时的context**
+
+你说"我的项目用React 16"，但实际已经升级到React 18。Claude会基于过时信息给建议。解决方案：定期检查CLAUDE.md，确保信息是最新的。
+
+**陷阱3：跨项目混淆context**
+
+在项目A中讨论了代码风格，然后切换到项目B。Claude可能会混淆两个项目的约定。解决方案：切换项目时用`/clear`清空Context。
 
 ### CLAUDE.md定制
 <!-- 待填充 -->
