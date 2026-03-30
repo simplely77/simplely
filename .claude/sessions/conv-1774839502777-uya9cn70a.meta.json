@@ -1,0 +1,20 @@
+{
+  "id": "conv-1774839502777-uya9cn70a",
+  "title": "添加交互式高级命令",
+  "titleGenerationStatus": "success",
+  "createdAt": 1774839502778,
+  "updatedAt": 1774839728329,
+  "lastResponseAt": 1774839728329,
+  "sessionId": "b538919a-7cc3-47b0-8c83-279a1d8fa139",
+  "sdkSessionId": "b538919a-7cc3-47b0-8c83-279a1d8fa139",
+  "currentNote": "工具指南/Claude Code 高级使用指南.md",
+  "usage": {
+    "model": "haiku",
+    "inputTokens": 71,
+    "cacheCreationInputTokens": 5405,
+    "cacheReadInputTokens": 48974,
+    "contextWindow": 200000,
+    "contextTokens": 54450,
+    "percentage": 27
+  }
+}

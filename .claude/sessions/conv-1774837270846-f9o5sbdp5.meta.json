@@ -1,0 +1,20 @@
+{
+  "id": "conv-1774837270846-f9o5sbdp5",
+  "title": "精简文章至高级教程",
+  "titleGenerationStatus": "success",
+  "createdAt": 1774837270847,
+  "updatedAt": 1774839452486,
+  "lastResponseAt": 1774839440818,
+  "sessionId": "a5b3a8e3-7bed-4c30-80e6-7f00bf852c01",
+  "sdkSessionId": "a5b3a8e3-7bed-4c30-80e6-7f00bf852c01",
+  "currentNote": "工具指南/Claude Code 高级使用指南.md",
+  "usage": {
+    "model": "sonnet",
+    "inputTokens": 0,
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0,
+    "contextWindow": 200000,
+    "contextTokens": 0,
+    "percentage": 0
+  }
+}

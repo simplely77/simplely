@@ -26,12 +26,13 @@ created: 2026-03-30
 - [[#理解他人代码库|我想快速了解别人写的代码库]]
 - [[#生成PR描述|我想生成PR描述/Commit message]]
 
-### ⚡ 通用高级技巧（5个）
+### ⚡ 通用高级技巧（6个）
 - [[#Context管理|Context管理]]
 - [[#CLAUDE.md定制|CLAUDE.md：为项目定制AI行为]]
 - [[#Prompt技巧|指令技巧：如何写出更精准的Prompt]]
 - [[#多文件操作|多文件操作：如何安全地大范围修改]]
 - [[#子Agent|子Agent和并行处理]]
+- [[#高级 CLI 使用技巧|高级 CLI 使用技巧：终端操作完全指南]]
 
 ---
 
@@ -1520,3 +1521,308 @@ npm test
 - **验证理解**：让Claude用你的语言重述理解
 - **小步前进**：大任务分解成小任务，逐步完成
 - **保存有用的context**：在CLAUDE.md中记录项目级别的信息
+
+---
+
+## 高级 CLI 使用技巧
+
+### 为什么要用 CLI
+
+Claude Code 的 CLI 模式特别适合：
+- **快速一次性任务**：不需要打开 GUI，直接在终端完成
+- **管道操作**：将命令输出直接传给 Claude 处理
+- **脚本自动化**：集成到 shell 脚本、Git hooks、CI/CD 中
+- **Headless 模式**：在服务器、容器、远程环境中使用
+
+### 基础 CLI 用法
+
+**直接提问（最简单）**
+
+```bash
+# 快速提问
+cc "解释这段代码在做什么" < script.js
+
+# 带文件引用
+cc "重构这个函数，提取重复逻辑" @src/utils/helper.js
+
+# 多文件分析
+cc "这两个文件的依赖关系是什么" @src/api.js @src/db.js
+```
+
+**管道输入（最强大）**
+
+```bash
+# 将命令输出传给 Claude
+git diff | cc "总结这次改动，生成 commit message"
+
+# 分析错误日志
+npm test 2>&1 | cc "分析测试失败的原因，给出修复建议"
+
+# 处理复杂输出
+docker ps -a | cc "找出占用内存最多的3个容器，解释为什么"
+
+# 代码审查
+git diff main...HEAD | cc "按照 CLAUDE.md 的标准审查这些改动"
+```
+
+### 高级 CLI 技巧
+
+**技巧1：Headless 模式（无交互）**
+
+适合脚本和自动化场景，Claude 直接返回结果，不需要人工确认：
+
+```bash
+# 启用 headless 模式
+cc --headless "分析这个函数的时间复杂度" < algorithm.js
+
+# 在 CI/CD 中使用
+cc --headless --output-format json "检查代码是否符合规范" @src/**/*.js
+
+# 批量处理
+for file in src/*.js; do
+  cc --headless "为这个文件生成单元测试" < "$file" > "tests/${file%.js}.test.js"
+done
+```
+
+**技巧2：输出格式控制**
+
+```bash
+# JSON 格式输出（便于脚本解析）
+cc --output-format json "列出这个项目的所有 API 端点" @src/routes/
+
+# Markdown 格式（便于文档）
+cc --output-format markdown "生成这个模块的 API 文档" @src/api/ > docs/api.md
+
+# 纯文本（默认）
+cc --output-format text "解释这段代码"
+```
+
+**技巧3：与 Git 工作流集成**
+
+```bash
+# Pre-commit hook：自动审查代码
+# .git/hooks/pre-commit
+#!/bin/bash
+git diff --cached | cc --headless "快速审查：是否有明显的 bug、安全问题或性能问题？如果有，列出来；如果没有，只回复 OK"
+if [ $? -ne 0 ]; then
+  echo "代码审查发现问题，请修复后再提交"
+  exit 1
+fi
+
+# 生成 commit message
+git diff --cached | cc "生成简洁的 commit message（conventional commits 格式）" --print
+
+# 生成 PR 描述
+git diff main...HEAD | cc "生成 PR 描述，包括 What/Why/How" > pr-description.md
+```
+
+**技巧4：快速代码生成**
+
+```bash
+# 生成测试文件
+cc "为这个函数生成 Jest 测试用例" < src/utils.js > tests/utils.test.js
+
+# 生成类型定义
+cc "为这个 JS 文件生成 TypeScript 类型定义" < api.js > api.d.ts
+
+# 生成文档
+cc "生成 JSDoc 注释" < src/module.js --print | pbcopy  # macOS
+cc "生成 JSDoc 注释" < src/module.js --print | xclip    # Linux
+```
+
+**技巧5：日志分析和调试**
+
+```bash
+# 分析应用日志
+tail -n 100 app.log | cc "找出错误模式，给出可能的原因"
+
+# 分析性能瓶颈
+npm run profile 2>&1 | cc "识别性能瓶颈，给出优化建议"
+
+# 解释复杂错误
+cargo build 2>&1 | cc "用简单的语言解释这些编译错误"
+```
+
+**技巧6：批量文件处理**
+
+```bash
+# 批量重命名（先预览）
+ls src/*.js | cc "建议更符合语义的文件名（输出 JSON 格式：{old: new}）"
+
+# 批量添加注释
+find src -name "*.js" -exec sh -c '
+  cc "为这个文件的导出函数添加 JSDoc 注释" < "$1" > "$1.tmp" && mv "$1.tmp" "$1"
+' _ {} \;
+
+# 批量代码审查
+find src -name "*.js" | while read file; do
+  echo "=== $file ===" >> review.md
+  cc "快速审查这个文件" < "$file" >> review.md
+done
+```
+
+**技巧7：与其他工具链组合**
+
+```bash
+# 与 jq 组合处理 JSON
+curl https://api.example.com/data | jq '.' | cc "分析这个 API 响应的结构，生成 TypeScript 接口"
+
+# 与 ripgrep 组合
+rg "TODO" -A 3 | cc "整理所有 TODO 项，按优先级排序"
+
+# 与 fd 组合
+fd -e js -e ts | cc "分析项目结构，生成模块依赖图（Mermaid 格式）"
+
+# 与 gh 组合
+gh pr view 123 --json body | cc "总结这个 PR 的主要改动"
+```
+
+### CLI 实战场景
+
+**场景1：快速代码审查**
+
+```bash
+# 审查当前改动
+git diff | cc "代码审查：检查性能、安全、可读性问题" --headless
+
+# 审查特定提交
+git show abc123 | cc "这个提交有什么潜在问题？"
+
+# 审查整个 PR
+gh pr diff 456 | cc "全面审查这个 PR，给出改进建议"
+```
+
+**场景2：自动化文档生成**
+
+```bash
+# 生成 README
+cc "根据项目结构生成 README" @package.json @src/ > README.md
+
+# 生成 CHANGELOG
+git log --oneline main..HEAD | cc "生成 CHANGELOG（Keep a Changelog 格式）" > CHANGELOG.md
+
+# 生成 API 文档
+cc "生成完整的 API 文档" @src/api/ --output-format markdown > docs/api.md
+```
+
+**场景3：智能搜索和重构**
+
+```bash
+# 找出所有使用某个 API 的地方
+rg "oldFunction" -l | xargs cc "列出所有调用 oldFunction 的位置，建议如何重构"
+
+# 批量重构
+cc "生成重构脚本：将所有 var 改为 const/let" @src/ > refactor.sh
+
+# 依赖分析
+cc "分析哪些模块依赖了这个文件" @src/utils/deprecated.js
+```
+
+**场景4：CI/CD 集成**
+
+```bash
+# GitHub Actions 示例
+# .github/workflows/code-review.yml
+- name: AI Code Review
+  run: |
+    git diff origin/main...HEAD | \
+    cc --headless "审查改动，如果有严重问题返回非零退出码" || exit 1
+
+# 性能回归检测
+- name: Performance Check
+  run: |
+    npm run benchmark | \
+    cc --headless "对比基准性能，如果性能下降超过10%则报警"
+```
+
+### CLI 配置和优化
+
+**配置文件位置**
+
+```bash
+# 全局配置
+~/.config/claude-code/config.json
+
+# 项目配置
+.claude/config.json
+```
+
+**常用配置项**
+
+```json
+{
+  "cli": {
+    "defaultModel": "claude-sonnet-4",
+    "headlessMode": false,
+    "outputFormat": "text",
+    "maxTokens": 4096,
+    "temperature": 0.7
+  },
+  "aliases": {
+    "review": "代码审查：检查性能、安全、可读性",
+    "test": "生成 Jest 测试用例",
+    "doc": "生成 JSDoc 注释"
+  }
+}
+```
+
+**使用别名简化命令**
+
+```bash
+# 定义别名后
+cc review < src/api.js
+cc test < src/utils.js
+cc doc < src/module.js
+```
+
+### CLI 最佳实践
+
+**性能优化**
+
+```bash
+# 使用 --print 避免交互确认（适合简单查询）
+cc --print "这个函数的时间复杂度是多少" < algo.js
+
+# 限制输入大小（避免超过 token 限制）
+head -n 100 large-file.log | cc "分析前100行日志"
+
+# 使用缓存（对于重复查询）
+cc --cache "解释这个配置文件" < config.yaml
+```
+
+**安全注意事项**
+
+```bash
+# 不要将敏感信息传给 Claude
+git diff | grep -v "password\|secret\|token" | cc "审查代码"
+
+# 使用 --dry-run 预览操作（如果支持）
+cc --dry-run "重构这个文件" < src/api.js
+
+# 审查 Claude 生成的脚本后再执行
+cc "生成清理脚本" > clean.sh
+# 先检查 clean.sh 的内容
+cat clean.sh
+# 确认无误后再执行
+bash clean.sh
+```
+
+**调试 CLI 问题**
+
+```bash
+# 启用详细日志
+cc --verbose "分析代码" < file.js
+
+# 查看 API 调用详情
+cc --debug "解释这段代码" < script.js
+
+# 检查配置
+cc --show-config
+```
+
+### 参考资源
+
+- [Claude Code CLI 官方文档](https://code.claude.com/docs/en/headless)
+- [Headless Mode 教程](https://institute.sfeir.com/en/claude-code/claude-code-headless-mode-and-ci-cd/tutorial/)
+- [CLI 完整指南](https://blakecrosley.com/guides/claude-code)
+- [50+ CLI 命令参考](https://pub.towardsai.net/claude-code-has-50-commands-most-developers-use-only-5-b675387ea2ce)
