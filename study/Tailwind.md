@@ -44,3 +44,15 @@
 >onKeyDown
 >onClick
 >onHover
+
+## CSS中的一些事件
+
+>e.stopPropagation() 阻止时间向父组件传播，比如删除传播到点击选中
+
+## 其它
+
+>cursor-pointer 控制指针悬停时的样式
+>transition-colors 颜色变化时渐变，减轻突然变色的突兀感
+>overflow-y-auto y轴上内容超过显示滚动条
+>tracking-wide 控制字间距为宽
+>absolute 相对最近已定位父元素定位，脱离文档流
