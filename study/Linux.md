@@ -20,3 +20,13 @@ multipass常用命令：
 docker pull alpine
 docker run -it alpine sh
 ```
+
+### 常用命令
+#### 1.ls
+ - -l，显示更详细信息
+ - -a，显示所有文件
+ - -h，以可读方式显示文件大小
+ - -t、-r、-i 等等
+#### 2.ln （创建链接文件）
+- -s，软链接
+![[Pasted image 20260403154125.png]] 
